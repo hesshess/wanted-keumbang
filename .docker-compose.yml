@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  server_a:
+    build: ./server_a
+    ports:
+      - "9999:8000"
+    env_file:
+      - ./server_a/.env
+  server_b:
+    build: ./server_b
+    ports:
+      - "8888:8000"
+    env_file:
+      - ./server_b/.env

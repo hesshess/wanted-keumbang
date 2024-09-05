@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "wanted-keumbang"
+version = "0.1.0"
+description = ""
+authors = ["Hess <hess90wang@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.12.4"
+django = "^5.1.1"
+gunicorn = "^21.0"
+mysqlclient = "^2.1.1"
+grpcio = "^1.56.0"
+grpcio-tools = "^1.56.0"
+djangorestframework = "^3.14"
+djangorestframework-simplejwt = "^5.2.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+
