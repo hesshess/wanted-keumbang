@@ -44,7 +44,10 @@ DJANGO_APPS = [
 ]
 
 # Apps defined within the project
-PROJECT_APPS = []
+PROJECT_APPS = [
+    "users",
+    "authentication",
+]
 
 # Apps from external packages
 PACKAGE_APPS = [
@@ -146,7 +149,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # Auth
-AUTH_USER_MODEL = "user.User"
+AUTH_USER_MODEL = "users.User"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [

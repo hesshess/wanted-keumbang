@@ -44,7 +44,10 @@ DJANGO_APPS = [
 ]
 
 # Apps defined within the project
-PROJECT_APPS = []
+PROJECT_APPS = [
+    "orders",
+    "products",
+]
 
 # Apps from external packages
 PACKAGE_APPS = [
