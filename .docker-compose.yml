@@ -4,11 +4,20 @@ services:
     build: ./server_a
     ports:
       - "9999:8000"
+      - "50052:50052"
     env_file:
       - ./server_a/.env
   server_b:
     build: ./server_b
     ports:
       - "8888:8000"
+      - "50051:50051"
     env_file:
       - ./server_b/.env
+  nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - server_a
+      - server_b

@@ -16,9 +16,10 @@ RUN poetry config virtualenvs.create false && poetry install --no-dev
 
 # server_b 프로젝트 소스 코드 복사
 COPY server_b /app/server_b
+COPY grpc /app/grpc
 
-# 포트 노출
-EXPOSE 8000
+EXPOSE 8000 50051  
+# Django API와 gRPC 포트 노출
 
 # Gunicorn으로 애플리케이션 실행
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "server_b.wsgi:application"]
