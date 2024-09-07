@@ -10,11 +10,12 @@ readme = "README.md"
 python = "3.12.4"
 django = "^5.1.1"
 gunicorn = "^21.0"
-mysqlclient = "^2.1.1"
 grpcio = "^1.56.0"
 grpcio-tools = "^1.56.0"
 djangorestframework = "^3.14"
 djangorestframework-simplejwt = "^5.2.2"
+mysqlclient = "^2.2.4"
+drf-yasg = "^1.21.7"
 
 
 [build-system]
