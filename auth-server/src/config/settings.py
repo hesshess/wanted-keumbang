@@ -15,11 +15,16 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+import sys
+
+
 env = environ.Env(DEBUG=(bool, True))
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+# 현재 파일의 상위 디렉토리의 부모 디렉토리를 BASE_DIR로 설정 (최상위 디렉토리)
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
+# 최상위 디렉토리(BASE_DIR)를 sys.path에 추가하여 Django 앱을 찾을 수 있도록 설정
+sys.path.append(str(BASE_DIR))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
