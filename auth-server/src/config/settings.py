@@ -18,19 +18,26 @@ from pathlib import Path
 import sys
 
 
-env = environ.Env(DEBUG=(bool, True))
+env = environ.Env()
 
 # 현재 파일의 상위 디렉토리의 부모 디렉토리를 BASE_DIR로 설정 (최상위 디렉토리)
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # 최상위 디렉토리(BASE_DIR)를 sys.path에 추가하여 Django 앱을 찾을 수 있도록 설정
-sys.path.append(str(BASE_DIR))
+sys.path.append(str(BASE_DIR / "src"))
+
+# 루트 디렉토리의 .env 파일 경로 지정
+ROOT_DIR = BASE_DIR.parent  # 루트 디렉토리 (README.md와 같은 위치)
+env_file = ROOT_DIR / ".env"
+
+# .env 파일 읽기
+environ.Env.read_env(env_file=env_file)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env.str("SECRET_KEY", default="test")
+SECRET_KEY = env.str("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", default=True)
@@ -96,8 +103,12 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": env.str("MARIADB_AUTH_DB"),
+        "USER": env.str("MARIADB_USER"),
+        "PASSWORD": env.str("MARIADB_PASSWORD"),
+        "HOST": env.str("MARIADB_HOST"),
+        "PORT": env.int("MARIADB_PORT"),
     }
 }
 
@@ -124,9 +135,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ko-kr"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Seoul"
 
 USE_I18N = True
 
