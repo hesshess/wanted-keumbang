@@ -100,6 +100,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+print(f"----------{ROOT_DIR}/{env.str('EC2_KEYPAIR')}")
 
 DATABASES = {
     "default": {
@@ -109,6 +110,11 @@ DATABASES = {
         "PASSWORD": env.str("MARIADB_PASSWORD"),
         "HOST": env.str("MARIADB_HOST"),
         "PORT": env.int("MARIADB_PORT"),
+        "OPTIONS": {
+            "ssl": {
+                "ca": f"{ROOT_DIR}/certificates/{env.str('RDS_SSL')}",
+            },
+        },
     }
 }
 

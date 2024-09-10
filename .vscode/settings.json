@@ -1,3 +1,9 @@
 {
-    "python.analysis.extraPaths": ["./grpc"]
-  }
+    "python.analysis.extraPaths": ["./grpc"],
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#ffc71d",
+      "titleBar.inactiveBackground": "#ffc71d"
+  },
+  "explorer.compactFolders": false,
+  "prettier.printWidth": 80
+}
