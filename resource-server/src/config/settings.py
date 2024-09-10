@@ -50,7 +50,10 @@ THIRD_PARTY_APPS = [
     "rest_framework",
 ]
 
-LOCAL_APPS = []
+LOCAL_APPS = [
+    "orders",
+    "products",
+]
 
 # Application definition
 
@@ -102,11 +105,16 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": env("MARIADB_RESOURCE_DB"),
-        "USER": env("MARIADB_USER"),
-        "PASSWORD": env("MARIADB_PASSWORD"),
-        "HOST": env("MARIADB_HOST"),
-        "PORT": env("MARIADB_PORT"),
+        "NAME": env.str("MARIADB_AUTH_DB"),
+        "USER": env.str("MARIADB_USER"),
+        "PASSWORD": env.str("MARIADB_PASSWORD"),
+        "HOST": env.str("MARIADB_HOST"),
+        "PORT": env.int("MARIADB_PORT"),
+        "OPTIONS": {
+            "ssl": {
+                "ca": f"{ROOT_DIR}/certificates/{env.str('RDS_SSL')}",
+            },
+        },
     }
 }
 
