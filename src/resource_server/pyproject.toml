@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "resource-server"
+version = "0.1.0"
+description = ""
+authors = ["Hess <hess90wang@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.12.4"
+django = "^5.1.1"
+djangorestframework = "^3.15.2"
+grpcio = "^1.66.1"
+drf-yasg = "^1.21.7"
+mysqlclient = "^2.2.4"
+django-environ = "^0.11.2"
+rest-framework-simplejwt = "^0.0.2"
+djangorestframework-simplejwt = "^5.3.1"
+protobuf = "^5.28.0"
+grpcio-tools = "^1.66.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

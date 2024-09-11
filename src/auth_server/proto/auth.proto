@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package auth;
+
+service AuthService {
+  // 기존 Access Token 검증을 위한 RPC
+  rpc VerifyToken (VerifyTokenRequest) returns (VerifyTokenResponse);
+
+  // Refresh Token을 통한 Access Token 재발급을 위한 RPC
+  rpc RefreshToken (RefreshTokenRequest) returns (RefreshTokenResponse);
+}
+
+// VerifyToken 요청 메시지
+message VerifyTokenRequest {
+  string token = 1;
+}
+
+// VerifyToken 응답 메시지
+message VerifyTokenResponse {
+  bool is_valid = 1;
+  User user = 2;
+}
+
+// 사용자 정보를 담는 메시지
+message User {
+  string user_id = 1;
+  string username = 2;
+  string role = 3;
+}
+
+// RefreshToken 요청 메시지
+message RefreshTokenRequest {
+  string refresh_token = 1;
+}
+
+// RefreshToken 응답 메시지
+message RefreshTokenResponse {
+  bool is_valid = 1;
+  string new_access_token = 2;  // 새로 발급된 Access Token
+}
