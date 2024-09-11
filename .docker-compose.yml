@@ -1,23 +1,25 @@
 version: '3.8'
 services:
-  server_a:
-    build: ./server_a
+  resource_server:
+    build: ./src/resource_server
     ports:
-      - "9999:8000"
-      - "50052:50052"
+      - "${RESOURCE_REST_PORT}:8000"
+      - "${RESOURCE_GRPC_PORT}:${RESOURCE_GRPC_PORT}"
     env_file:
-      - ./server_a/.env
-  server_b:
-    build: ./server_b
+      - ./src/.env
+
+  auth_server:
+    build: ./auth_server
     ports:
-      - "8888:8000"
-      - "50051:50051"
+      - "${AUTH_REST_PORT}:8000"
+      - "${AUTH_GRPC_PORT}:${AUTH_GRPC_PORT}"
     env_file:
-      - ./server_b/.env
+      - ./src/.env
+
   nginx:
     build: ./nginx
     ports:
       - "80:80"
     depends_on:
-      - server_a
-      - server_b
+      - resource_server
+      - auth_server
