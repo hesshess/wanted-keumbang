@@ -5,8 +5,6 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-
-
 from .serializers import UserSerializer
 
 
@@ -26,6 +24,12 @@ class LoginView(generics.GenericAPIView):
         user = User.objects.filter(username=username).first()
         if user and user.check_password(password):
             refresh = RefreshToken.for_user(user)
+
+            # 사용자 정보를 Access Token에 추가
+            refresh["user_id"] = user.id
+            refresh["username"] = user.username
+            # 필요에 따라 역할도 추가 (예: refresh['role'] = user.profile.role)
+
             return Response(
                 {
                     "refresh": str(refresh),

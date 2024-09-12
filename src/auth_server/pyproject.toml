@@ -17,6 +17,7 @@ drf-yasg = "^1.21.7"
 mysqlclient = "^2.2.4"
 protobuf = "^5.28.0"
 grpcio-tools = "^1.66.1"
+requests = "^2.32.3"
 
 
 [build-system]

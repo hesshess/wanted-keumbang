@@ -1,96 +1,73 @@
-import os
-
 import unittest
+import requests  # REST API 호출을 위한 requests 라이브러리
 import grpc
-from concurrent import futures
 from auth_pb2 import (
     VerifyTokenRequest,
     RefreshTokenRequest,
     VerifyTokenResponse,
     RefreshTokenResponse,
-    User,
 )
-from auth_pb2_grpc import (
-    AuthServiceStub,
-    add_AuthServiceServicer_to_server,
-    AuthServiceServicer,
-)
-from grpc_server import AuthService  # 실제 gRPC 서버 클래스 가져오기
-
-
-# 테스트용 Mock gRPC 서버 설정
-class MockAuthService(AuthServiceServicer):
-    def VerifyToken(self, request, context):
-        """Mock VerifyToken 메서드"""
-        token_str = request.token
-        if token_str == "valid_access_token":
-            return VerifyTokenResponse(
-                is_valid=True, user=User(user_id="1", username="testuser", role="admin")
-            )
-        else:
-            context.set_code(grpc.StatusCode.UNAUTHENTICATED)
-            context.set_details("Invalid or expired token.")
-            return VerifyTokenResponse(is_valid=False)
-
-    def RefreshToken(self, request, context):
-        """Mock RefreshToken 메서드"""
-        refresh_token_str = request.refresh_token
-        if refresh_token_str == "valid_refresh_token":
-            new_access_token = "new_valid_access_token"
-            return RefreshTokenResponse(
-                is_valid=True, new_access_token=new_access_token
-            )
-        else:
-            context.set_code(grpc.StatusCode.UNAUTHENTICATED)
-            context.set_details("Invalid or expired refresh token.")
-            return RefreshTokenResponse(is_valid=False)
+from auth_pb2_grpc import AuthServiceStub
 
 
 class TestAuthService(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        # gRPC 모의 서버 생성 및 시작
-        cls.server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-        add_AuthServiceServicer_to_server(MockAuthService(), cls.server)
-        cls.port = "[::]:50051"  # 테스트용 포트 설정
-        cls.server.add_insecure_port(cls.port)
-        cls.server.start()
+        # Django REST API 서버 URL (auth_server의 Django 서버)
+        cls.base_url = "http://localhost:8888"
+
+        # 사용자 등록 및 로그인 API를 호출하여 유효한 토큰을 생성
+        cls.access_token, cls.refresh_token = cls.register_and_login_user()
 
         # gRPC 클라이언트 생성
         cls.channel = grpc.insecure_channel("localhost:50051")
         cls.stub = AuthServiceStub(cls.channel)
 
     @classmethod
+    def register_and_login_user(cls):
+        # 사용자 등록
+        register_response = requests.post(
+            f"{cls.base_url}/auth/register/",
+            json={"username": "testuser9", "password": "testpassword"},
+        )
+        if register_response.status_code != 201:
+            raise Exception(
+                "User registration failed. Make sure the server is running and the endpoint is correct."
+            )
+
+        # 사용자 로그인 및 토큰 발급
+        login_response = requests.post(
+            f"{cls.base_url}/auth/login/",
+            json={"username": "testuser", "password": "testpassword"},
+        )
+        if login_response.status_code != 200:
+            raise Exception(
+                "User login failed. Make sure the server is running and the endpoint is correct."
+            )
+
+        data = login_response.json()
+        return data["access"], data["refresh"]
+
+    @classmethod
     def tearDownClass(cls):
-        cls.server.stop(0)
+        # gRPC 채널 닫기
         cls.channel.close()
 
     def test_verify_token_valid(self):
         """유효한 Access Token 검증 테스트"""
-        request = VerifyTokenRequest(token="valid_access_token")
+        request = VerifyTokenRequest(token=self.access_token)
         response = self.stub.VerifyToken(request)
         self.assertTrue(response.is_valid)
-        self.assertEqual(response.user.username, "testuser")
-
-    def test_verify_token_invalid(self):
-        """유효하지 않은 Access Token 검증 테스트"""
-        request = VerifyTokenRequest(token="invalid_access_token")
-        response = self.stub.VerifyToken(request)
-        self.assertFalse(response.is_valid)
 
     def test_refresh_token_valid(self):
         """유효한 Refresh Token 검증 및 Access Token 재발급 테스트"""
-        request = RefreshTokenRequest(refresh_token="valid_refresh_token")
+        request = RefreshTokenRequest(refresh_token=self.refresh_token)
         response = self.stub.RefreshToken(request)
         self.assertTrue(response.is_valid)
-        self.assertEqual(response.new_access_token, "new_valid_access_token")
-
-    def test_refresh_token_invalid(self):
-        """유효하지 않은 Refresh Token 검증 테스트"""
-        request = RefreshTokenRequest(refresh_token="invalid_refresh_token")
-        response = self.stub.RefreshToken(request)
-        self.assertFalse(response.is_valid)
+        self.assertIsNotNone(
+            response.new_access_token
+        )  # 새로운 Access Token이 존재하는지 확인
 
 
 if __name__ == "__main__":

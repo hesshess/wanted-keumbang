@@ -172,5 +172,18 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,  # 이전 리프레시 토큰을 블랙리스트로 관리
     "ALGORITHM": env.str("ALGORITHM"),
     "SIGNING_KEY": env.str("SECRET_KEY"),
+    # USER_ID_FIELD와 USER_ID_CLAIM을 기본 'id'로 설정
+    "USER_ID_FIELD": "id",  # 기본 User 모델의 'id' 필드 사용
+    "USER_ID_CLAIM": "user_id",  # JWT의 클레임 이름을 'user_id'로 설정
     "AUTH_HEADER_TYPES": ("Bearer",),
+    "VERIFYING_KEY": None,
+    "AUDIENCE": None,
+    "ISSUER": None,
+    "JWK_URL": None,
+    "LEEWAY": 0,
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
+    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
+    "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
+    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 }

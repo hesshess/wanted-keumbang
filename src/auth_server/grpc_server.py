@@ -36,10 +36,13 @@ class AuthService(AuthServiceServicer):
             # JWT 토큰의 유효성 검증
             token = AccessToken(token_str)
 
-            # user 정보를 추출
-            user_id = token["user_id"]
-            username = token["username"]
-            role = token["role"]
+            # user 정보를 추출 (필수 필드가 누락되지 않도록 안전하게 접근)
+            user_id = str(token.get("user_id", ""))
+            username = str(token.get("username", ""))
+            role = str(token.get("role", "user"))
+
+            if not user_id or not username:
+                raise ValueError("user_id or username is missing in the token")
 
             logger.info(f"Token verified successfully for user: {username}")
 
@@ -62,9 +65,23 @@ class AuthService(AuthServiceServicer):
 
             # 새로운 Access Token 생성
             new_access_token = str(refresh_token.access_token)
+
+            # 새로운 Access Token에 사용자 정보 추가
+            new_access_token_obj = AccessToken(
+                new_access_token
+            )  # 문자열을 AccessToken 객체로 변환
+            new_access_token_obj["user_id"] = str(
+                refresh_token["user_id"]
+            )  # user_id를 문자열로 변환
+            new_access_token_obj["username"] = str(refresh_token["username"])
+            new_access_token_obj["role"] = str(refresh_token.get("role", "user"))
+
             logger.info("New Access Token generated successfully.")
             return RefreshTokenResponse(
-                is_valid=True, new_access_token=new_access_token
+                is_valid=True,
+                new_access_token=str(
+                    new_access_token_obj
+                ),  # AccessToken 객체를 문자열로 변환
             )
         except Exception as e:
             logger.error(f"Refresh token validation failed: {e}")
